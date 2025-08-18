@@ -4,4 +4,4 @@ app = FastAPI()
 
 @app.get("/ping")
 async def root():
-    return {"message": "pong"}
+    return "pong"
