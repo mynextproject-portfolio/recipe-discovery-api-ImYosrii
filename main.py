@@ -49,3 +49,13 @@ async def update_recipe(id: int, recipe: Recipe):
         recipe.id = id
         recipes[id] = recipe
         return JSONResponse(content=recipe.dict(), status_code=200)
+    
+# Delete recipe
+@app.delete("/recipes/{id}")
+async def delete_recipe(id: int):
+    if 0 <= id < len(recipes):
+        recipes.pop(id)
+        for i in range(id, len(recipes)):
+            recipes[i].id = i
+        return JSONResponse(content={"message": ""}, status_code=204)
+    raise HTTPException(status_code=404, detail="Recipe not found")
