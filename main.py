@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
+
 app = FastAPI()
 
 
@@ -27,11 +28,11 @@ async def root():
 
 @app.get("/recipes")
 async def get_recipes():
-    return JSONResponse(content=[recipe.dict() for recipe in recipes], status_code=200)
+    return JSONResponse(content=[recipe.dict() for recipe in recipes if recipe is not None], status_code=200)
 
 @app.get("/recipes/{id}")
 async def get_recipe(id: int):
-    if 0 <= id < len(recipes):
+    if 0 <= id < len(recipes) and recipes[id] is not None:
         return JSONResponse(content=recipes[id].dict(), status_code=200)
     raise HTTPException(status_code=404, detail="Recipe not found")
 
@@ -49,13 +50,12 @@ async def update_recipe(id: int, recipe: Recipe):
         recipe.id = id
         recipes[id] = recipe
         return JSONResponse(content=recipe.dict(), status_code=200)
+    raise HTTPException(status_code=404, detail="Recipe not found")
     
 # Delete recipe
 @app.delete("/recipes/{id}")
 async def delete_recipe(id: int):
-    if 0 <= id < len(recipes):
-        recipes.pop(id)
-        for i in range(id, len(recipes)):
-            recipes[i].id = i
-        return JSONResponse(content={"message": ""}, status_code=204)
+    if 0 <= id < len(recipes) and recipes[id] is not None:
+        recipes[id] = None
+        return JSONResponse(status_code=204)
     raise HTTPException(status_code=404, detail="Recipe not found")
