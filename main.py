@@ -41,3 +41,11 @@ async def create_recipe(recipe: Recipe):
     recipe.id = len(recipes)
     recipes.append(recipe)
     return JSONResponse(content=recipe.dict(), status_code=201)
+
+# Update recipe
+@app.put("/recipes/{id}")
+async def update_recipe(id: int, recipe: Recipe):
+    if 0 <= id < len(recipes):
+        recipe.id = id
+        recipes[id] = recipe
+        return JSONResponse(content=recipe.dict(), status_code=200)
