@@ -30,6 +30,18 @@ async def root():
 async def get_recipes():
     return JSONResponse(content=[recipe.dict() for recipe in recipes if recipe is not None], status_code=200)
 
+
+
+# Search by Query
+@app.get("/recipes/search")
+async def search_recipes(q: str):
+    if len(q):
+        results = [recipe.dict() for recipe in recipes if recipe is not None and q.lower() in recipe.title.lower()]
+        if results:
+            return JSONResponse(content=results, status_code=200)
+    return JSONResponse(content=[], status_code=200)
+
+# Get Recipe by ID
 @app.get("/recipes/{id}")
 async def get_recipe(id: int):
     if 0 <= id < len(recipes) and recipes[id] is not None:
@@ -59,3 +71,5 @@ async def delete_recipe(id: int):
         recipes[id] = None
         return JSONResponse(status_code=204)
     raise HTTPException(status_code=404, detail="Recipe not found")
+
+
